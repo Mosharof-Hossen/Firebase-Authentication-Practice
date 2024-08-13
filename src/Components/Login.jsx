@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../ContextProvider/AuthProvider";
 
 
 const Login = () => {
-    const {sighInUserByEmailPassword} = useContext(AuthContext);
-    
+    const { sighInUserByEmailPassword, signInByGoogle } = useContext(AuthContext);
+    const navigate = useNavigate()
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -13,14 +13,29 @@ const Login = () => {
         const password = e.target.password.value;
         console.log(email, password);
 
-        sighInUserByEmailPassword(email,password)
-        .then(res => {
+        sighInUserByEmailPassword(email, password)
+            .then(res => {
+                console.log(res.user);
+                e.target.reset()
+                navigate("/")
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
+    const handleGoogleSignIn = () => {
+        signInByGoogle()
+        .then((res)=>{
+            console.log("LogIn by Google Successfully");
             console.log(res.user);
+            navigate("/")
         })
-        .catch(err=>{
+        .catch((err)=>{
             console.log(err);
         })
     }
+
     return (
         <div className="hero bg-base-200 min-h-screen">
             <div className="hero-content flex-col w-1/2">
@@ -50,6 +65,9 @@ const Login = () => {
                     </form>
                     <div className="text-center mb-3">
                         <p>Do not have an account? <Link to={"/register"} className="text-green-600">Register</Link></p>
+                    </div>
+                    <div className="text-center">
+                        <button onClick={handleGoogleSignIn} className="btn">Google</button>
                     </div>
                 </div>
             </div>
